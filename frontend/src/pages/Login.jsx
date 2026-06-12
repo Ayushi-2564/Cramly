@@ -1,8 +1,44 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, Loader2 } from "lucide-react";
+import toast from "react-hot-toast";
+
+import useAuthStore from "../store/authStore";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const { login, loading } = useAuthStore();
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!formData.email || !formData.password) {
+      toast.error("Please enter email and password");
+      return;
+    }
+
+    try {
+      await login(formData);
+      toast.success("Login successful");
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-5 text-white">
       <div className="absolute left-10 top-20 h-72 w-72 rounded-full bg-violet-600/30 blur-[120px]" />
@@ -29,15 +65,18 @@ const Login = () => {
           Continue your last-minute exam preparation.
         </p>
 
-        <form className="mt-8 space-y-4">
+        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <div>
             <label className="mb-2 block text-sm text-slate-300">
               Email address
             </label>
             <input
               type="email"
+              name="email"
               placeholder="you@example.com"
               className="input-field"
+              value={formData.email}
+              onChange={handleChange}
             />
           </div>
 
@@ -47,13 +86,21 @@ const Login = () => {
             </label>
             <input
               type="password"
+              name="password"
               placeholder="Enter password"
               className="input-field"
+              value={formData.password}
+              onChange={handleChange}
             />
           </div>
 
-          <button type="button" className="btn-primary w-full">
-            Login
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn-primary flex w-full items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {loading && <Loader2 className="animate-spin" size={18} />}
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 

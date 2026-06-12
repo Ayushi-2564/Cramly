@@ -1,12 +1,16 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Brain,
   CalendarCheck,
   FileText,
+  LogOut,
   MessageCircle,
   Users,
   Wallet,
 } from "lucide-react";
+import toast from "react-hot-toast";
+
+import useAuthStore from "../store/authStore";
 
 const cards = [
   {
@@ -32,6 +36,15 @@ const cards = [
 ];
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const { user, logout } = useAuthStore();
+
+  const handleLogout = async () => {
+    await logout();
+    toast.success("Logged out successfully");
+    navigate("/login");
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <aside className="fixed left-0 top-0 hidden h-full w-64 border-r border-white/10 bg-slate-950/80 p-5 backdrop-blur-xl md:block">
@@ -39,7 +52,13 @@ const Dashboard = () => {
           Cramly
         </Link>
 
-        <nav className="mt-10 space-y-2 text-sm text-slate-300">
+        <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4">
+          <p className="text-sm text-slate-400">Logged in as</p>
+          <p className="mt-1 font-semibold">{user?.name || "User"}</p>
+          <p className="mt-1 text-xs text-slate-500">{user?.email}</p>
+        </div>
+
+        <nav className="mt-8 space-y-2 text-sm text-slate-300">
           {[
             "Dashboard",
             "Tutors",
@@ -57,6 +76,14 @@ const Dashboard = () => {
             </button>
           ))}
         </nav>
+
+        <button
+          onClick={handleLogout}
+          className="absolute bottom-5 left-5 right-5 flex items-center justify-center gap-2 rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-300 transition hover:bg-red-500/20"
+        >
+          <LogOut size={18} />
+          Logout
+        </button>
       </aside>
 
       <main className="md:ml-64">
@@ -65,13 +92,34 @@ const Dashboard = () => {
             <div>
               <p className="text-sm text-violet-300">Welcome back</p>
               <h1 className="font-heading text-3xl font-bold">
-                Student Dashboard
+                Hi, {user?.name || "Student"} 👋
               </h1>
+
+              <div className="mt-2 flex flex-wrap gap-2">
+                {user?.roles?.map((role) => (
+                  <span
+                    key={role}
+                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs capitalize text-slate-300"
+                  >
+                    {role}
+                  </span>
+                ))}
+              </div>
             </div>
 
-            <Link to="/" className="btn-secondary text-center">
-              Back to Home
-            </Link>
+            <div className="flex gap-3">
+              <Link to="/" className="btn-secondary text-center">
+                Back to Home
+              </Link>
+
+              <button
+                onClick={handleLogout}
+                className="btn-secondary flex items-center gap-2 text-center md:hidden"
+              >
+                <LogOut size={18} />
+                Logout
+              </button>
+            </div>
           </div>
         </header>
 
