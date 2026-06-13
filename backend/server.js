@@ -10,7 +10,7 @@ import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import socketHandler from "./sockets/socketHandler.js";
 import authRoutes from "./routes/authRoutes.js";
 import tutorRoutes from "./routes/tutorRoutes.js";
-
+import bookingRoutes from "./routes/bookingRoutes.js";
 dotenv.config();
 
 connectDB();
@@ -54,6 +54,7 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/tutors", tutorRoutes);
+app.use("/api/bookings", bookingRoutes);
 
 socketHandler(io);
 

@@ -8,13 +8,13 @@ import TutorFilters from "../components/tutors/TutorFilters";
 import TutorProfileModal from "../components/tutors/TutorProfileModal";
 import BecomeTutorModal from "../components/tutors/BecomeTutorModal";
 import { getTutors } from "../services/tutorService";
-
+import BookingRequestModal from "../components/bookings/BookingRequestModal";
 const Tutors = () => {
   const [tutors, setTutors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTutor, setSelectedTutor] = useState(null);
   const [showBecomeTutor, setShowBecomeTutor] = useState(false);
-
+const [bookingTutor, setBookingTutor] = useState(null);
   const [filters, setFilters] = useState({
     search: "",
     subject: "All",
@@ -105,11 +105,22 @@ const Tutors = () => {
       </div>
 
       {selectedTutor && (
-        <TutorProfileModal
-          tutor={selectedTutor}
-          onClose={() => setSelectedTutor(null)}
-        />
-      )}
+  <TutorProfileModal
+    tutor={selectedTutor}
+    onClose={() => setSelectedTutor(null)}
+    onRequestSession={(tutor) => {
+      setSelectedTutor(null);
+      setBookingTutor(tutor);
+    }}
+  />
+)}
+
+{bookingTutor && (
+  <BookingRequestModal
+    tutor={bookingTutor}
+    onClose={() => setBookingTutor(null)}
+  />
+)}
 
       {showBecomeTutor && (
         <BecomeTutorModal

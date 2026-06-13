@@ -1,6 +1,5 @@
 import { X, Star, IndianRupee, Clock, CalendarCheck } from "lucide-react";
-
-const TutorProfileModal = ({ tutor, onClose }) => {
+const TutorProfileModal = ({ tutor, onClose, onRequestSession }) => {
   if (!tutor) return null;
 
   return (
@@ -74,9 +73,12 @@ const TutorProfileModal = ({ tutor, onClose }) => {
           <p className="mt-1 font-semibold">{tutor.availability}</p>
         </div>
 
-        <button className="btn-primary mt-6 w-full">
-          Request Session
-        </button>
+       <button
+  onClick={() => onRequestSession(tutor)}
+  className="btn-primary mt-6 w-full"
+>
+  Request Session
+</button>
       </div>
     </div>
   );
