@@ -9,6 +9,7 @@ import connectDB from "./config/db.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import socketHandler from "./sockets/socketHandler.js";
 import authRoutes from "./routes/authRoutes.js";
+import tutorRoutes from "./routes/tutorRoutes.js";
 
 dotenv.config();
 
@@ -52,6 +53,7 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/tutors", tutorRoutes);
 
 socketHandler(io);
 
