@@ -1,5 +1,11 @@
 import { X, Star, IndianRupee, Clock, CalendarCheck } from "lucide-react";
-const TutorProfileModal = ({ tutor, onClose, onRequestSession }) => {
+
+const TutorProfileModal = ({
+  tutor,
+  onClose,
+  onRequestSession,
+  onStartChat,
+}) => {
   if (!tutor) return null;
 
   return (
@@ -13,9 +19,11 @@ const TutorProfileModal = ({ tutor, onClose, onRequestSession }) => {
 
             <div>
               <h2 className="font-heading text-2xl font-bold">
-                {tutor?.user?.name}
+                {tutor?.user?.name || "Tutor"}
               </h2>
-              <p className="text-sm text-slate-400">{tutor?.user?.university}</p>
+              <p className="text-sm text-slate-400">
+                {tutor?.user?.university || "University not added"}
+              </p>
             </div>
           </div>
 
@@ -70,15 +78,26 @@ const TutorProfileModal = ({ tutor, onClose, onRequestSession }) => {
 
         <div className="mt-6 rounded-2xl bg-white/5 p-5">
           <p className="text-sm text-slate-400">Availability</p>
-          <p className="mt-1 font-semibold">{tutor.availability}</p>
+          <p className="mt-1 font-semibold">
+            {tutor.availability || "Available on request"}
+          </p>
         </div>
 
-       <button
-  onClick={() => onRequestSession(tutor)}
-  className="btn-primary mt-6 w-full"
->
-  Request Session
-</button>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <button
+            onClick={() => onRequestSession(tutor)}
+            className="btn-primary w-full"
+          >
+            Request Session
+          </button>
+
+          <button
+            onClick={() => onStartChat(tutor)}
+            className="btn-secondary w-full"
+          >
+            Message Tutor
+          </button>
+        </div>
       </div>
     </div>
   );

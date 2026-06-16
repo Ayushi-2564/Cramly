@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Plus } from "lucide-react";
 
@@ -7,14 +8,21 @@ import TutorCard from "../components/tutors/TutorCard";
 import TutorFilters from "../components/tutors/TutorFilters";
 import TutorProfileModal from "../components/tutors/TutorProfileModal";
 import BecomeTutorModal from "../components/tutors/BecomeTutorModal";
-import { getTutors } from "../services/tutorService";
 import BookingRequestModal from "../components/bookings/BookingRequestModal";
+
+import { getTutors } from "../services/tutorService";
+import { startConversation } from "../services/chatService";
+
 const Tutors = () => {
+  const navigate = useNavigate();
+
   const [tutors, setTutors] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const [selectedTutor, setSelectedTutor] = useState(null);
   const [showBecomeTutor, setShowBecomeTutor] = useState(false);
-const [bookingTutor, setBookingTutor] = useState(null);
+  const [bookingTutor, setBookingTutor] = useState(null);
+
   const [filters, setFilters] = useState({
     search: "",
     subject: "All",
@@ -40,12 +48,33 @@ const [bookingTutor, setBookingTutor] = useState(null);
     }
   };
 
+  const handleStartChat = async (tutor) => {
+    try {
+      if (!tutor?.user?._id) {
+        toast.error("Tutor user id missing");
+        return;
+      }
+
+      const data = await startConversation(tutor.user._id);
+
+      setSelectedTutor(null);
+
+      navigate("/dashboard/chat", {
+        state: {
+          conversationId: data.conversation._id,
+        },
+      });
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to start chat");
+    }
+  };
+
   useEffect(() => {
     fetchTutors();
   }, []);
 
   return (
-    <div>
+    <div className="pt-4">
       <div className="mb-8 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
         <div>
           <p className="text-sm uppercase tracking-[0.3em] text-violet-300">
@@ -105,22 +134,24 @@ const [bookingTutor, setBookingTutor] = useState(null);
       </div>
 
       {selectedTutor && (
-  <TutorProfileModal
-    tutor={selectedTutor}
-    onClose={() => setSelectedTutor(null)}
-    onRequestSession={(tutor) => {
-      setSelectedTutor(null);
-      setBookingTutor(tutor);
-    }}
-  />
-)}
+        <TutorProfileModal
+          tutor={selectedTutor}
+          onClose={() => setSelectedTutor(null)}
+          onRequestSession={(tutor) => {
+            setSelectedTutor(null);
+            setBookingTutor(tutor);
+          }}
+          onStartChat={handleStartChat}
+        />
+      )}
 
-{bookingTutor && (
-  <BookingRequestModal
-    tutor={bookingTutor}
-    onClose={() => setBookingTutor(null)}
-  />
-)}
+      {bookingTutor && (
+        <BookingRequestModal
+          tutor={bookingTutor}
+          onClose={() => setBookingTutor(null)}
+          onSuccess={fetchTutors}
+        />
+      )}
 
       {showBecomeTutor && (
         <BecomeTutorModal
