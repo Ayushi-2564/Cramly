@@ -15,6 +15,7 @@ import bookingRoutes from "./routes/bookingRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import noteRoutes from "./routes/noteRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -48,7 +49,7 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Health check route
+// Root route
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
@@ -56,7 +57,7 @@ app.get("/", (req, res) => {
   });
 });
 
-// API health route
+// Health check route
 app.get("/api/health", (req, res) => {
   res.status(200).json({
     success: true,
@@ -73,6 +74,7 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/notes", noteRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/payments", paymentRoutes);
 
 // Socket handler
 socketHandler(io);
