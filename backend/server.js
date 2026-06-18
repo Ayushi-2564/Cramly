@@ -16,17 +16,15 @@ import chatRoutes from "./routes/chatRoutes.js";
 import noteRoutes from "./routes/noteRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
 
-// Load environment variables
 dotenv.config();
 
-// Connect MongoDB
 connectDB();
 
 const app = express();
 const httpServer = createServer(app);
 
-// Socket.IO setup
 const io = new Server(httpServer, {
   cors: {
     origin: process.env.CLIENT_URL,
@@ -34,10 +32,8 @@ const io = new Server(httpServer, {
   },
 });
 
-// Make io available inside controllers
 app.set("io", io);
 
-// Global middlewares
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
@@ -49,7 +45,6 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Root route
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
@@ -57,7 +52,6 @@ app.get("/", (req, res) => {
   });
 });
 
-// Health check route
 app.get("/api/health", (req, res) => {
   res.status(200).json({
     success: true,
@@ -67,7 +61,6 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/tutors", tutorRoutes);
 app.use("/api/bookings", bookingRoutes);
@@ -75,15 +68,13 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/notes", noteRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/reviews", reviewRoutes);
 
-// Socket handler
 socketHandler(io);
 
-// Error middlewares
 app.use(notFound);
 app.use(errorHandler);
 
-// Start server
 const PORT = process.env.PORT || 5000;
 
 httpServer.listen(PORT, () => {

@@ -7,6 +7,7 @@ import {
   IndianRupee,
   Loader2,
   MessageSquare,
+  Star,
   User,
   Video,
   XCircle,
@@ -18,6 +19,7 @@ import {
   verifyPayment,
 } from "../../services/paymentService";
 import { loadRazorpayScript } from "../../utils/loadRazorpay";
+import ReviewModal from "../reviews/ReviewModal";
 
 const getUserId = (user) => {
   if (!user) return "";
@@ -79,6 +81,7 @@ const BookingCard = ({
   onRefresh,
 }) => {
   const [loading, setLoading] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   const savedUser = JSON.parse(localStorage.getItem("cramlyUser") || "{}");
   const loggedInUser = currentUser || user || savedUser;
@@ -103,6 +106,10 @@ const BookingCard = ({
       setLoading(true);
       await actionFunction(booking._id);
       toast.success(successMessage);
+
+      if (onRefresh) {
+        onRefresh();
+      }
     } catch (error) {
       toast.error(error.response?.data?.message || "Action failed");
     } finally {
@@ -301,6 +308,16 @@ const BookingCard = ({
         </div>
       )}
 
+      {isStudent && booking.status === "completed" && (
+        <button
+          onClick={() => setShowReviewModal(true)}
+          className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-yellow-500/10 px-4 py-3 font-semibold text-yellow-300 transition hover:bg-yellow-500/20"
+        >
+          <Star size={18} />
+          Give Review
+        </button>
+      )}
+
       <div className="mt-5 flex flex-wrap gap-3">
         {isTeacher && booking.status === "pending" && (
           <>
@@ -361,6 +378,14 @@ const BookingCard = ({
           <MessageSquare size={14} />
           Requested on {formatDate(booking.createdAt)}
         </div>
+      )}
+
+      {showReviewModal && (
+        <ReviewModal
+          booking={booking}
+          onClose={() => setShowReviewModal(false)}
+          onSuccess={onRefresh}
+        />
       )}
     </div>
   );
